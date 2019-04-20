@@ -7,52 +7,83 @@
  */
 
 import React, { Component } from "react";
-import { Platform, StyleSheet, Text, View, Button } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity
+} from "react-native";
 
 type Props = {};
 export default class App extends Component<Props> {
   constructor() {
     super();
-    this.state = {};
+    this.state = { resultText: "" };
   }
+
+  calaculateResult() {
+    const text = this.state.resultText;
+  }
+
+  buttonPressed(text) {
+    if (text == "=") return this.calaculateResult();
+
+    this.setState({ resultText: this.state.resultText + text });
+  }
+
+  operate(operation) {
+    switch (operation) {
+      case "D":
+        let text = this.state.resultText.split("");
+        text.pop();
+        this.setState({ resultText: text.join("") });
+    }
+  }
+
   render() {
+    let nums = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [".", 0, "="]];
+    let rows = [];
+    for (let i = 0; i < 4; i++) {
+      row = [];
+      for (let j = 0; j < 3; j++) {
+        row.push(
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => this.buttonPressed(nums[i][j])}
+          >
+            <Text style={styles.btnText}>{nums[i][j]}</Text>
+          </TouchableOpacity>
+        );
+      }
+      rows.push(<View style={styles.row}>{row}</View>);
+    }
+
+    let opertaions = ["D", "+", "-", "*", "/"];
+    let ops = [];
+    for (let i = 0; i < 5; i++) {
+      ops.push(
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => this.operate(opertaions[i])}
+        >
+          <Text style={[styles.btnText, styles.white]}>{opertaions[i]}</Text>
+        </TouchableOpacity>
+      );
+    }
+
     return (
       <View style={styles.container}>
         <View style={styles.result}>
-          <Text style={styles.resultText}>11*11</Text>
+          <Text style={styles.resultText}>{this.state.resultText}</Text>
         </View>
         <View style={styles.calculation}>
           <Text style={styles.calculationText}>121</Text>
         </View>
         <View style={styles.buttons}>
-          <View style={styles.numbers}>
-            <View style={styles.row}>
-              <Button title="0" />
-              <Button title="0" />
-              <Button title="0" />
-            </View>
-            <View style={styles.row}>
-              <Button title="0" />
-              <Button title="0" />
-              <Button title="0" />
-            </View>
-            <View style={styles.row}>
-              <Button title="0" />
-              <Button title="0" />
-              <Button title="0" />
-            </View>
-            <View style={styles.row}>
-              <Button title="0" />
-              <Button title="0" />
-              <Button title="0" />
-            </View>
-          </View>
-          <View style={styles.operations}>
-            <Button title="+" />
-            <Button title="+" />
-            <Button title="+" />
-            <Button title="+" />
-          </View>
+          <View style={styles.numbers}>{rows}</View>
+          <View style={styles.operations}>{ops}</View>
         </View>
       </View>
     );
@@ -100,6 +131,18 @@ const styles = StyleSheet.create({
   },
   calculationText: {
     fontSize: 24,
+    color: "white"
+  },
+  btn: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "stretch"
+  },
+  btnText: {
+    fontSize: 30
+  },
+  white: {
     color: "white"
   }
 });
